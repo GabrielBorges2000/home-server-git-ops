@@ -38,7 +38,7 @@ spec:
         - name: saas-web
           # 📦 Imagem privada do GHCR
           image: ghcr.io/gabrielborges2000/freelancer-manager-frontend-dev:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
           ports:
             - name: http

@@ -38,7 +38,7 @@ spec:
       initContainers:
         - name: migrations
           image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command: ["/bin/sh", "-c", "npx prisma@6.11.1 migrate deploy"]
           env:
             - name: DATABASE_URL
@@ -52,7 +52,7 @@ spec:
         - name: saas-api
           # 📦 Imagem privada do GHCR
           image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command: ["node", "dist/server.js"]
           ports:
             - name: http
