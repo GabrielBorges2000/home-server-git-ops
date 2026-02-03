@@ -3,6 +3,23 @@
 # PostgreSQL: Secret, PVC, Deployment e Service
 # ============================================
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: databases
+  labels:
+    name: databases
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: databases
+data:
+  POSTGRES_DB: "freelancer-manager"
+  POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+  PGDATA: /var/lib/postgresql/data/pgdata
+---
+apiVersion: v1
 kind: Secret
 metadata:
   name: postgres-secrets
@@ -11,6 +28,7 @@ type: Opaque
 data:
   POSTGRES_USER: kubernets
   POSTGRES_PASSWORD: kubernets
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

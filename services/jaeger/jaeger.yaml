@@ -2,11 +2,18 @@
 # ============================================
 # Jaeger: Deployment e Service
 # ============================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jaeger
+  labels:
+    name: jaeger
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jaeger
-  namespace: databases
+  namespace: jaeger
   labels:
     app: jaeger
 spec:
@@ -44,7 +51,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: jaeger
-  namespace: databases
+  namespace: jaeger
   labels:
     app: jaeger
 spec:
