@@ -26,8 +26,9 @@ metadata:
   namespace: databases
 type: Opaque
 data:
-  POSTGRES_USER: ZG9ja2Vy
-  POSTGRES_PASSWORD: ZG9ja2Vy
+  POSTGRES_USER: kubernets
+  POSTGRES_PASSWORD: kubernets
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
