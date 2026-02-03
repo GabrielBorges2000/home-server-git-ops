@@ -39,6 +39,17 @@ spec:
         - name: wait-for-db
           image: busybox:1.35
           command: ["sh", "-c", 'echo "Aguardando dependências..."; sleep 2']
+        - name: prisma-migrate
+          image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "npx prisma migrate deploy"]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: database-url
+                  optional: true
 
       containers:
         - name: saas-api

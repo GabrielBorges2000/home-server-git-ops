@@ -16,9 +16,8 @@ metadata:
   namespace: databases
 type: Opaque
 stringData:
-  POSTGRES_USER: kubernets
-  POSTGRES_PASSWORD: kubernets
-
+  POSTGRES_USER: docker
+  POSTGRES_PASSWORD: docker
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
