@@ -1,0 +1,104 @@
+---
+# ============================================
+# Deployment: saas-api (Backend)
+# ============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-api
+  namespace: freelancer-manager-dev
+  labels:
+    app: freelancer-manager
+    component: api
+    env: dev
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: freelancer-manager
+      component: api
+      env: dev
+  template:
+    metadata:
+      labels:
+        app: freelancer-manager
+        component: api
+        env: dev
+    spec:
+      # 🔐 Secret para autenticação no GHCR
+      imagePullSecrets:
+        - name: ghcr-secret
+
+      # Ordem de inicialização
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.35
+          command: ["sh", "-c", 'echo "Aguardando dependências..."; sleep 2']
+
+      containers:
+        - name: saas-api
+          # 📦 Imagem privada do GHCR
+          image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 3333
+              protocol: TCP
+
+          # ⚙️ Variáveis de ambiente
+          env:
+            - name: NODE_ENV
+              value: "development"
+            - name: LOG_LEVEL
+              value: "debug"
+            - name: PORT
+              value: "3000"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: database-url
+                  optional: true
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: redis-url
+                  optional: true
+
+          # 💾 Recursos
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+          # 🏥 Health Checks
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3333
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3333
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+

@@ -1,0 +1,53 @@
+---
+# ============================================
+# HPA: saas-web (Auto-scaling)
+# ============================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: saas-web-hpa
+  namespace: freelancer-manager-dev
+  labels:
+    app: freelancer-manager
+    component: web
+    env: dev
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: saas-web
+  
+  minReplicas: 2
+  maxReplicas: 4
+  
+  metrics:
+  # Escala baseada em CPU
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
+  
+  # Escala baseada em Memória
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 85
+  
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 15
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      selectPolicy: Max

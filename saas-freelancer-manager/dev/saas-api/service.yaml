@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: saas-api
+  namespace: freelancer-manager-dev
+  labels:
+    app: freelancer-manager
+    component: api
+    env: dev
+spec:
+  type: ClusterIP
+  selector:
+    app: freelancer-manager
+    component: api
+    env: dev
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3333
+    protocol: TCP
+  sessionAffinity: None

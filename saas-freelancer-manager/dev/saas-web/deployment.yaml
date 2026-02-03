@@ -1,0 +1,87 @@
+---
+# ============================================
+# Deployment: saas-web (Frontend)
+# ============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-web
+  namespace: freelancer-manager-dev
+  labels:
+    app: freelancer-manager
+    component: web
+    env: dev
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: freelancer-manager
+      component: web
+      env: dev
+  template:
+    metadata:
+      labels:
+        app: freelancer-manager
+        component: web
+        env: dev
+    spec:
+      # 🔐 Secret para autenticação no GHCR
+      imagePullSecrets:
+        - name: ghcr-secret
+
+      containers:
+        - name: saas-web
+          # 📦 Imagem privada do GHCR
+          image: ghcr.io/gabrielborges2000/freelancer-manager-frontend-dev:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+
+          # ⚙️ Variáveis de ambiente
+          env:
+            - name: NODE_ENV
+              value: "development"
+            - name: PORT
+              value: "3000"
+            - name: REACT_APP_API_URL
+              value: "http://saas-api.freelancer-manager-dev.svc.cluster.local"
+            - name: REACT_APP_API_PORT
+              value: "80"
+
+          # 💾 Recursos
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+
+          # 🏥 Health Checks
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2

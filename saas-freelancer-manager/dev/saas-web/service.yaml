@@ -1,0 +1,25 @@
+---
+# ============================================
+# Service: saas-web
+# ============================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: saas-web
+  namespace: freelancer-manager-dev
+  labels:
+    app: freelancer-manager
+    component: web
+    env: dev
+spec:
+  type: ClusterIP
+  selector:
+    app: freelancer-manager
+    component: web
+    env: dev
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+    protocol: TCP
+  sessionAffinity: None

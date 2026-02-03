@@ -1,0 +1,10 @@
+---
+# ============================================
+# Namespace para PostgreSQL e Jaeger
+# ============================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: databases
+  labels:
+    name: databases
