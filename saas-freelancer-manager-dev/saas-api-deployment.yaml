@@ -53,7 +53,7 @@ spec:
           # 📦 Imagem privada do GHCR
           image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
           imagePullPolicy: IfNotPresent
-
+          command: ["node", "dist/server.js"]
           ports:
             - name: http
               containerPort: 3333
