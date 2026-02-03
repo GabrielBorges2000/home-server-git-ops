@@ -42,7 +42,7 @@ spec:
         - name: prisma-migrate
           image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
           imagePullPolicy: IfNotPresent
-          command: ["sh", "-c", "npx prisma migrate deploy"]
+          command: ["sh", "-c", "pnpm dlx prisma@6.11.1 migrate deploy"]
           env:
             - name: DATABASE_URL
               valueFrom:

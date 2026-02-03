@@ -18,6 +18,7 @@ type: Opaque
 stringData:
   POSTGRES_USER: docker
   POSTGRES_PASSWORD: docker
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
