@@ -51,10 +51,12 @@ spec:
               value: "development"
             - name: PORT
               value: "3000"
-            - name: REACT_APP_API_URL
-              value: "http://saas-api.freelancer-manager-dev.svc.cluster.local"
-            - name: REACT_APP_API_PORT
-              value: "80"
+            - name: NEXT_PUBLIC_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: web-secrets
+                  key: next-public-api-url
+                  optional: true
 
           # 💾 Recursos
           resources:
