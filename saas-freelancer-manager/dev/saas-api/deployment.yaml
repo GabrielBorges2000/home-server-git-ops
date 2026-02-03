@@ -58,7 +58,7 @@ spec:
             - name: LOG_LEVEL
               value: "debug"
             - name: PORT
-              value: "3000"
+              value: "3333"
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -70,6 +70,42 @@ spec:
                 secretKeyRef:
                   name: api-secrets
                   key: redis-url
+                  optional: true
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: jwt-secret
+                  optional: true
+            - name: RESEND_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: resend-apikey
+                  optional: true
+            - name: OTEL_TRACES_EXPORTER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: otel-traces-exporter
+                  optional: true
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: otel-exporter-otlp-endpoint
+                  optional: true
+            - name: OTEL_SERVICE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: otel-service-name
+                  optional: true
+            - name: OTEL_NODE_ENABLED_INSTRUMENTATIONS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: otel-node-enabled-instrumentations
                   optional: true
 
           # 💾 Recursos
@@ -101,4 +137,3 @@ spec:
             periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 2
-
