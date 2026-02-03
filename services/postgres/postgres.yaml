@@ -10,24 +10,14 @@ metadata:
     name: databases
 ---
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: postgres-config
-  namespace: databases
-data:
-  POSTGRES_DB: "freelancer-manager"
-  POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
-  PGDATA: /var/lib/postgresql/data/pgdata
----
-apiVersion: v1
 kind: Secret
 metadata:
   name: postgres-secrets
   namespace: databases
 type: Opaque
-data:
-  POSTGRES_USER: kubernets
-  POSTGRES_PASSWORD: kubernets
+stringData:
+  POSTGRES_USER: docker
+  POSTGRES_PASSWORD: docker
 
 ---
 apiVersion: v1
@@ -40,7 +30,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 30Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
