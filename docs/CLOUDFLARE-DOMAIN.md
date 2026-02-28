@@ -77,6 +77,84 @@ O cert-manager vai criar o Secret `freelancer-manager-tls` no namespace `freelan
 - **Ingress**: `kubectl get ingress -n freelancer-manager-dev`
 - Acesse **https://app.codeborges.com.br** (frontend) e **https://api.codeborges.com.br/health** (API).
 
+## Troubleshooting: não consigo acessar pelo domínio
+
+Se a aplicação responde com port-forward mas não pelo domínio (api/app.codeborges.com.br), confira:
+
+### 1. URL do Tunnel no Zero Trust
+
+O tráfego do Cloudflare precisa chegar ao **Service do Traefik** no cluster. O nome e o namespace do Traefik variam:
+
+- **K3s**: o Traefik costuma estar no namespace **kube-system**, Service **traefik**.  
+  URL de origem: `http://traefik.kube-system.svc.cluster.local:80`
+- **Outros clusters**: pode ser `traefik` no namespace `traefik`:  
+  `http://traefik.traefik.svc.cluster.local:80`
+
+Descubra o Service correto:
+
+```bash
+kubectl get svc -A | grep -i traefik
+```
+
+No **Public Hostname** do tunnel, use **HTTP** e essa URL (substituindo namespace e nome do service se for diferente).
+
+### 2. Traefik enxergando o Ingress
+
+O Traefik precisa **observar o namespace** onde está o Ingress (`freelancer-manager-dev`). No K3s, por padrão ele costuma observar todos os namespaces; se não observar, o Ingress não gera rotas.
+
+Para conferir se o Traefik está lendo o Ingress:
+
+```bash
+kubectl get ingress -n freelancer-manager-dev -o yaml
+```
+
+O Ingress deve ter `ingressClassName: traefik` e o cluster deve ter uma IngressClass `traefik`:
+
+```bash
+kubectl get ingressclass
+```
+
+Se não existir a classe `traefik`, você pode criar (no K3s pode já existir):
+
+```bash
+kubectl apply -f traefik/ingress-class.yaml
+```
+
+### 3. Host no Tunnel
+
+Cada Public Hostname deve usar o **host correto** (ex.: `api.codeborges.com.br` e `app.codeborges.com.br`). O Tunnel envia esse host no cabeçalho `Host`; o Traefik usa esse valor para escolher a rota do Ingress. Se o host no Zero Trust estiver errado, o Traefik não encontra a regra.
+
+### 4. Traefik (K3s) observando todos os namespaces
+
+Em alguns ambientes o Traefik só observa o próprio namespace. Se o Ingress estiver em `freelancer-manager-dev` e o Traefik em `kube-system`, ele pode não criar as rotas.
+
+No **K3s**, você pode forçar o Traefik a observar todos os namespaces criando um `HelmChartConfig` no servidor (não via GitOps, no nó do cluster):
+
+```bash
+# No servidor K3s (onde fica /var/lib/rancher/k3s/)
+sudo tee /var/lib/rancher/k3s/server/manifests/traefik-config.yaml << 'EOF'
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    providers:
+      kubernetesIngress:
+        namespaces: []   # vazio = todos os namespaces
+EOF
+```
+
+Depois reinicie o K3s ou aguarde o Traefik recarregar. Confirme o namespace do HelmChart do Traefik com: `kubectl get helmchart -n kube-system`.
+
+### 5. Resumo do fluxo
+
+1. Navegador → **https://app.codeborges.com.br** (Cloudflare termina TLS).
+2. Cloudflare Tunnel envia **HTTP** para `http://<traefik-service>.<namespace>.svc.cluster.local:80` com `Host: app.codeborges.com.br`.
+3. Traefik recebe na porta 80 (entrypoint `web`), vê o Ingress `freelancer-manager` e encaminha para o Service **saas-web**.
+4. Resposta volta pelo mesmo caminho.
+
 ## Port-forward (alternativa local)
 
 Se quiser acessar sem domínio (apenas para debug):
