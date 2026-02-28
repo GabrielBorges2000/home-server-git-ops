@@ -12,7 +12,7 @@ metadata:
     component: api
     env: dev
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
