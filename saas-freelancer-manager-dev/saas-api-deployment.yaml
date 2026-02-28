@@ -63,7 +63,7 @@ spec:
         - name: saas-api
           # 📦 Imagem privada do GHCR
           image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           command: ["node", "dist/server.js"]
           ports:
             - name: http
