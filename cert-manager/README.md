@@ -1,5 +1,11 @@
 # cert-manager – ClusterIssuer Let's Encrypt
 
+## Erro de DNS: "lookup acme-v02.api.letsencrypt.org ... server misbehaving"
+
+Se o issuer falhar com **dial tcp: lookup acme-v02.api.letsencrypt.org on 10.43.0.10:53: server misbehaving**, o DNS do cluster não está resolvendo nomes externos. Veja **[docs/DNS-CLUSTER.md](../docs/DNS-CLUSTER.md)** para corrigir (ajustar DNS no nó ou CoreDNS para usar 8.8.8.8 / 1.1.1.1).
+
+---
+
 O erro **"Resource not found in cluster: cert-manager.io/v1/ClusterIssuer:letsencrypt-prod"** costuma ocorrer quando:
 
 1. O **cert-manager ainda não está instalado** (os CRDs não existem no cluster), ou  
@@ -42,6 +48,12 @@ kubectl apply -f cert-manager/cluster-issuer-v1alpha2.yaml
 
 Ou edite o `cluster-issuer.yaml` e troque `apiVersion: cert-manager.io/v1` por `apiVersion: cert-manager.io/v1alpha2`, depois aplique de novo.
 
-## GitOps (Flux / Argo CD)
+## Deploy com Argo CD
 
-Se o ClusterIssuer for aplicado pelo GitOps, garanta que o **cert-manager** (incluindo CRDs) seja instalado e esteja **Ready** antes do recurso que aplica este manifest. Use dependências (e.g. `dependsOn` no Flux) ou ordem de sync para que o cert-manager seja aplicado primeiro.
+Se você usa **Argo CD**, o cert-manager precisa estar instalado no cluster **antes** do sync que aplica o ClusterIssuer (senão aparece "Resource not found"). O ClusterIssuer já tem `argocd.argoproj.io/sync-wave: "1"` para ordenar dentro do mesmo Application.
+
+Veja **[docs/ARGOCD.md](../docs/ARGOCD.md)** para:
+
+- Instalar cert-manager antes (kubectl ou Application separada)
+- Exemplo de Application para este repo
+- Health check opcional para ClusterIssuer
