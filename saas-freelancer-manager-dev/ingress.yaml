@@ -1,0 +1,40 @@
+# Ingress para API e Web (codeborges.com.br).
+# Requer: Traefik como Ingress Controller e cert-manager instalado.
+# No Cloudflare Zero Trust, configure o tunnel para o Service do Traefik
+# (ex.: http://traefik.traefik.svc.cluster.local:80 — confira o nome com kubectl get svc -A).
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: freelancer-manager
+  namespace: freelancer-manager-dev
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - api.codeborges.com.br
+        - app.codeborges.com.br
+      secretName: freelancer-manager-tls
+  rules:
+    - host: api.codeborges.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: saas-api
+                port:
+                  number: 80
+    - host: app.codeborges.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: saas-web
+                port:
+                  number: 80
