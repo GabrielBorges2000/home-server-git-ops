@@ -67,8 +67,10 @@ spec:
           envFrom:
             - secretRef:
                 name: postgres-secrets
+            - configMapRef:
+                name: postgres-config
 
-          # NÃO mexemos em PGDATA.
+          # NÃO mexemos em PGDATA; o container oficial usa /var/lib/postgresql/data.
           # Deixamos o container oficial trabalhar como foi projetado.
 
           readinessProbe:
