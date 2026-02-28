@@ -51,12 +51,24 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:15-alpine
-          args:
-            - "-c"
-            - "hba_file=/etc/postgresql/pg_hba.conf"
+          image: postgres:17-alpine
           ports:
             - containerPort: 5432
+          # Garante que o Service só encaminha tráfego quando o banco aceita conexões
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-h", "localhost", "-U", "docker", "-d", "freelancer-manager"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 5
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-h", "localhost", "-U", "docker", "-d", "freelancer-manager"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           envFrom:
             - configMapRef:
                 name: postgres-config
