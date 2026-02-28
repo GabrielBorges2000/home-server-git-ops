@@ -36,6 +36,18 @@ spec:
 
       # Ordem de inicialização
       initContainers:
+        # Aguarda o PostgreSQL estar pronto antes de rodar migrations
+        - name: wait-for-postgres
+          image: postgres:17-alpine
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h postgres.databases.svc.cluster.local -p 5432; do
+                echo "Aguardando PostgreSQL..."
+                sleep 2
+              done
+              echo "PostgreSQL pronto!"
         - name: migrations
           image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
           imagePullPolicy: Always
@@ -46,7 +58,6 @@ spec:
                 secretKeyRef:
                   name: api-secrets
                   key: database-url
-                  optional: true
 
       containers:
         - name: saas-api
@@ -72,7 +83,6 @@ spec:
                 secretKeyRef:
                   name: api-secrets
                   key: database-url
-                  optional: true
             - name: NEXT_PUBLIC_API_URL
               valueFrom:
                 secretKeyRef:
