@@ -54,18 +54,22 @@ spec:
           image: postgres:17-alpine
           ports:
             - containerPort: 5432
-          # Garante que o Service só encaminha tráfego quando o banco aceita conexões
-          readinessProbe:
+          # startupProbe: dá tempo para initdb/recovery antes do livenessProbe matar o container
+          startupProbe:
             exec:
-              command: ["pg_isready", "-h", "localhost", "-U", "docker", "-d", "freelancer-manager"]
+              command: ["pg_isready", "-h", "localhost", "-U", "docker"]
             initialDelaySeconds: 10
             periodSeconds: 5
+            failureThreshold: 24
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-h", "localhost", "-U", "docker"]
+            periodSeconds: 5
             timeoutSeconds: 3
-            failureThreshold: 5
+            failureThreshold: 3
           livenessProbe:
             exec:
-              command: ["pg_isready", "-h", "localhost", "-U", "docker", "-d", "freelancer-manager"]
-            initialDelaySeconds: 30
+              command: ["pg_isready", "-h", "localhost", "-U", "docker"]
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
