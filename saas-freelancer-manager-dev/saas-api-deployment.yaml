@@ -101,6 +101,12 @@ spec:
                   name: api-secrets
                   key: resend-apikey
                   optional: true
+            - name: RESEND_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: resend-apikey
+                  optional: true
             - name: OTEL_TRACES_EXPORTER
               valueFrom:
                 secretKeyRef:
