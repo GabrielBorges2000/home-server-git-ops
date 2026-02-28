@@ -95,7 +95,7 @@ spec:
                   name: api-secrets
                   key: jwt-secret
                   optional: true
-            - name: RESEND_API_KEY
+            - name: RESEND_APIKEY
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
