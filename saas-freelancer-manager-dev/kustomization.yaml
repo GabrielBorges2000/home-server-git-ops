@@ -6,6 +6,8 @@ resources:
   - saas-web-deployment.yaml
 images:
   - name: ghcr.io/GabrielBorges2000/freelancer-manager-backend-dev
-    newTag: dev-91ad214
+    newTag: latest
+    
   - name: ghcr.io/GabrielBorges2000/freelancer-manager-frontend-dev
-    newTag: dev-91ad214
+    newTag: latest
+    
