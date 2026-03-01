@@ -22,7 +22,7 @@ spec:
       containers:
         - name: migrate
           image:  ghcr.io/gabrielborges2000/freelancer-manager-backend-dev
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command: ["npx", "prisma", "migrate", "deploy"]
           env:
             - name: DATABASE_URL
