@@ -14,8 +14,8 @@ resources:
   - saas-web-secret.yaml
   - saas-web-service.yaml
 images:
-  - name: ghcr.io/GabrielBorges2000/freelancer-manager-backend-dev
+  - name: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev
     newTag: latest
 
-  - name: ghcr.io/GabrielBorges2000/freelancer-manager-frontend-dev
+  - name: ghcr.io/gabrielborges2000/freelancer-manager-frontend-dev
     newTag: latest
