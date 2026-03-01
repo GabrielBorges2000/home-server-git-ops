@@ -51,7 +51,7 @@ spec:
         - name: migrations
           image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
           imagePullPolicy: Always
-          command: ["/bin/sh", "-c", "npx prisma@6.11.1 migrate deploy"]
+          command: ["/bin/sh", "-c", "npx prisma@7.3.0 migrate deploy"]
           env:
             - name: DATABASE_URL
               valueFrom:
