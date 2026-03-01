@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: saas-api-migrate
+  namespace: freelancer-manager-dev
+  labels:
+    app: freelancer-manager
+    component: migration
+    env: dev
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: freelancer-manager
+        component: migration
+        env: dev
+    spec:
+      restartPolicy: OnFailure
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: migrate
+          image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
+          imagePullPolicy: IfNotPresent
+          command: ["npx", "prisma", "migrate", "deploy"]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: database-url

@@ -33,32 +33,6 @@ spec:
       # 🔐 Secret para autenticação no GHCR
       imagePullSecrets:
         - name: ghcr-secret
-
-      # Ordem de inicialização
-      initContainers:
-        # Aguarda o PostgreSQL estar pronto antes de rodar migrations
-        - name: wait-for-postgres
-          image: postgres:17-alpine
-          command:
-            - sh
-            - -c
-            - |
-              until pg_isready -h postgres.databases.svc.cluster.local -p 5432 -U docker -d freelancer-manager; do
-                echo "Aguardando PostgreSQL..."
-                sleep 2
-              done
-              echo "PostgreSQL pronto!"
-        - name: migrations
-          image: ghcr.io/gabrielborges2000/freelancer-manager-backend-dev:latest
-          imagePullPolicy: Always
-          command: ["/bin/sh", "-c", "npx prisma@7.3.0 migrate deploy"]
-          env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: database-url
-
       containers:
         - name: saas-api
           # 📦 Imagem privada do GHCR
